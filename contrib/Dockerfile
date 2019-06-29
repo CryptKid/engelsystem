@@ -8,7 +8,19 @@ RUN composer --no-ansi install --no-dev --ignore-platform-reqs
 RUN composer --no-ansi dump-autoload --optimize
 
 # Use frontend container for assets
-FROM ${NGINX_IMAGE} AS frontend
+#FROM ${NGINX_IMAGE} AS frontend
+
+# Create frontend
+##TODO: remove this when using a docker hub
+
+FROM node:8-alpine as themes
+WORKDIR /app
+RUN apk add --no-cache yarn
+COPY .babelrc package.json webpack.config.js /app/
+RUN yarn install
+COPY resources/assets/ /app/resources/assets
+RUN yarn build
+
 
 # Intermediate container for less layers
 FROM alpine as data
