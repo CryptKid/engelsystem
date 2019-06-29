@@ -37,6 +37,24 @@ services:
       - db:/var/lib/mysql
     networks:
       - database
+  migrate:
+    image: engelsystem
+    build:
+      context: ..
+      dockerfile: contrib/Dockerfile
+    environment:
+      MYSQL_HOST: database
+      MYSQL_USER: engelsystem
+      MYSQL_PASSWORD: engelsystem
+      MYSQL_DATABASE: engelsystem
+    networks:
+      - internal
+      - database
+    depends_on:
+      - database
+    command: /var/www/bin/migrate
+ 
+    
 volumes:
   db: {}
   static: {}
