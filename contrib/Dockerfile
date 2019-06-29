@@ -30,7 +30,7 @@ COPY db/ /app/db
 COPY import/ /app/import
 COPY includes/ /app/includes
 COPY public/ /app/public
-COPY --from=frontend /var/www/public/assets/ /app/public/assets
+COPY --from=themes /var/www/public/assets/ /app/public/assets
 COPY resources/lang /app/resources/lang
 COPY resources/views /app/resources/views
 COPY src/ /app/src
