@@ -1,34 +1,17 @@
 # Setup
 ARG NGINX_IMAGE=engelsystem-nginx:latest
-ARG COMPOSER_IMAGE=composer
-ARG FRONTEND_IMAGE=frontend
-ARG DATA_IMAGE=data
-
-FROM node:8-alpine as themes
-WORKDIR /app
-RUN apk add --no-cache yarn
-COPY .babelrc package.json webpack.config.js /app/
-RUN yarn install
-COPY resources/assets/ /app/resources/assets
-RUN yarn build
-
-FROM nginx:alpine as ${NGINX_IMAGE}
-COPY contrib/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY --from=themes /app/public/assets /var/www/public/assets/
-RUN touch /var/www/public/index.php
-
 
 # composer install
-FROM composer AS ${COMPOSER_IMAGE}
+FROM composer AS composer
 COPY ./ /app/
 RUN composer --no-ansi install --no-dev --ignore-platform-reqs
 RUN composer --no-ansi dump-autoload --optimize
 
 # Use frontend container for assets
-FROM ${NGINX_IMAGE} AS ${FRONTEND_IMAGE}
+FROM ${NGINX_IMAGE} AS frontend
 
 # Intermediate container for less layers
-FROM alpine as ${DATA_IMAGE}
+FROM alpine as data
 COPY bin/ /app/bin
 COPY config/ /app/config
 COPY db/ /app/db
